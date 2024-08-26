@@ -151,14 +151,13 @@ class Env(gym.Env):
             obs_range = self._agent_view_mask[0] // 2
             for row in range(max(0, pos[0] - obs_range), min(pos[0] + obs_range + 1, self._grid_shape[0])):
                 for col in range(max(0, pos[1] - obs_range), min(pos[1] + obs_range + 1, self._grid_shape[1])):
-                    print(self._full_obs[row][col])
                     if self._full_obs[row][col] != PRE_IDS["empty"]:
                         # If limited obs_range, then check if distance is low enough
                         if self._actual_obsrange is not None:
                             dist = np.sqrt((row - pos[0]) ** 2 + (col - pos[1]) ** 2)
                             if dist > self._actual_obsrange / 2:
                                 continue
-                        if self._see_agents and PRE_IDS['agent'] in self._full_obs[row][col]:
+                        if self._see_agents and PRE_IDS['agent'] in self._full_obs[row][col] and self._full_obs[row][col][-1] != str(agent_i + 1):
                             _prey_pos[row - (pos[0] - obs_range), col - (pos[1] - obs_range)] = 2
                         elif PRE_IDS['prey'] in self._full_obs[row][col]:
                             _prey_pos[row - (pos[0] - obs_range), col - (pos[1] - obs_range)] = 1  # set position for the prey loc.
@@ -166,8 +165,6 @@ class Env(gym.Env):
             _agent_i_obs += _prey_pos.flatten().tolist()  # adding prey pos in observable area
             # _agent_i_obs += [self._step_count / self._max_steps]  # adding time
             _obs.append(_agent_i_obs)
-            print(_agent_i_obs)
-            exit()
 
         if self.full_observable:
             _obs = np.array(_obs).flatten().tolist()
@@ -293,8 +290,7 @@ class Env(gym.Env):
             _count += 1
 
         agent_id = []
-        for x, y in neighbours_xy:
-            agent_id.append(int(self._full_obs[x][y].split(PRE_IDS['agent'])[1]) - 1)
+        for x, y in neighbours_xy:agent_id.append(int(self._full_obs[x][y].split(PRE_IDS['agent'])[1]) - 1)
         return _count, agent_id
 
     def step(self, agents_action):
