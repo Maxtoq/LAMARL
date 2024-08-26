@@ -1,12 +1,11 @@
 #!/bin/bash
-#SBATCH --partition=hard
+#SBATCH --partition=gpu_p2
 #SBATCH --job-name=ec
 #SBATCH --nodes=1
-#SBATCH --gpus-per-node=1
-#SBATCH --time=5000
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=maxime.toquebiau@sorbonne.universite.fr
+#SBATCH --gres=gpu:1 
+#SBATCH --time=24:00:00
 #SBATCH --output=outputs/%x-%j.out
+#SBATCH --error=outputs/ERROR%x-%j.out
 
 source venv/bin/activate
 
